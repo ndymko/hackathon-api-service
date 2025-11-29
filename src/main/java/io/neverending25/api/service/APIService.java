@@ -181,6 +181,12 @@ Return JSON:
         return sendToLlama(prompt);
     }
 
+    public Map<String, Object> llm(Map<String, Object> body) {
+        String prompt = body.get("prompt").toString();
+
+        return sendToLlama(prompt);
+    }
+
     private Map<String, Object> sendToLlama(String prompt) {
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("model", "llama3");

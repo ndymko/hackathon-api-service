@@ -25,4 +25,10 @@ public class APIController {
     public Map<String, Object> validate(@RequestBody Map<String, Object> body) {
         return apiService.validatePlanViaLlama(body);
     }
+
+    @PostMapping("/llm")
+    @ResponseStatus(HttpStatus.OK)
+    public Map<String, Object> llm(@RequestBody Map<String, Object> body) {
+        return apiService.llm(body);
+    }
 }
