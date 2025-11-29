@@ -17,7 +17,7 @@ public class MockParserClient implements ParserClient {
     private final ObjectMapper objectMapper;
 
     @Override
-    public Map<String, Object> parse(Resource file) {
+    public Map<String, Object> parse(String imageBase64) {
         try (InputStream is = getClass().getResourceAsStream("/demo/mock-floorplan.json")) {
             return objectMapper.readValue(is, new TypeReference<Map<String, Object>>() {});
         }

@@ -16,14 +16,13 @@ public class APIController {
 
     @PostMapping("/parse")
     @ResponseStatus(HttpStatus.OK)
-    public Map<String, Object> parse(@RequestPart("file") MultipartFile file) {
-        return apiService.parse(file);
+    public Map<String, Object> parse(@RequestBody Map<String, Object> body) {
+        return apiService.parse(body);
     }
 
     @PostMapping("/validate")
     @ResponseStatus(HttpStatus.OK)
-    public Map<String, Object> validate(@RequestBody Map<String, Object> requestBody) {
-        Map<String, Object> plan = (Map<String, Object>) requestBody.get("plan");
-        return apiService.validatePlanViaLlama(plan);
+    public Map<String, Object> validate(@RequestBody Map<String, Object> body) {
+        return apiService.validatePlanViaLlama(body);
     }
 }

@@ -2,10 +2,8 @@ package io.neverending25.api.service;
 
 import io.neverending25.api.client.ParserClient;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.multipart.MultipartFile;
 import tools.jackson.databind.ObjectMapper;
 
 import java.util.HashMap;
@@ -17,12 +15,13 @@ public class APIService {
     private final ParserClient parserClient;
     private final ObjectMapper objectMapper;
 
-    public Map<String, Object> parse(MultipartFile file) {
-        Resource resource = file.getResource();
-        Map<String, Object> input = parserClient.parse(resource);
-        Map<String, Object> result = sendPlanToLlama(input);
+    public Map<String, Object> parse(Map<String, Object> body) {
+        String imageBase64 = body.get("image").toString();
+        return parserClient.parse(imageBase64);
+    }
 
-        return result;
+    public Map<String, Object> modify(Map<String, Object> plan) {
+        return sendPlanToLlama(plan);
     }
 
     public Map<String, Object> sendPlanToLlama(Map<String, Object> currentPlan) {
@@ -86,8 +85,9 @@ Return JSON:
         return sendToLlama(prompt);
     }
 
-    public Map<String, Object> validatePlanViaLlama(Map<String, Object> plan) {
-        String planJson = objectMapper.writeValueAsString(plan);
+    public Map<String, Object> validatePlanViaLlama(Map<String, Object> body) {
+        Map<String, Object> result = sendPlanToLlama(body);
+        String planJson = objectMapper.writeValueAsString(result);
 
         String prompt = String.format("""
 You are a building code compliance validator for Russian Federation (ЖК РФ).
