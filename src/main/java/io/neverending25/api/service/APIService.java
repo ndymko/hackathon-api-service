@@ -184,7 +184,25 @@ Return JSON:
     public Map<String, Object> llm(Map<String, Object> body) {
         String prompt = body.get("prompt").toString();
 
-        return sendToLlama(prompt);
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("model", "llama3");
+        requestBody.put("prompt", prompt);
+        requestBody.put("stream", false);
+        // НЕ СТАВЬ format: json для свободного текста!
+        requestBody.put("options", Map.of("temperature", 0.7));
+
+        RestTemplate restTemplate = new RestTemplate();
+        Map<String, Object> response = restTemplate.postForObject(
+                "http://localhost:11434/api/generate",
+                requestBody,
+                Map.class
+        );
+
+        String responseText = (String) response.get("response");
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("response", responseText);
+        return result;
     }
 
     private Map<String, Object> sendToLlama(String prompt) {
