@@ -1,9 +1,15 @@
 package io.neverending25.api.controller;
 
+import io.neverending25.api.dto.PageResponse;
+import io.neverending25.api.dto.PlanResponse;
 import io.neverending25.api.service.APIService;
+import io.neverending25.api.service.PlanService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +25,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class APIController {
     private final APIService apiService;
+    private final PlanService planService;
 
     @PostMapping("/parse")
     @ResponseStatus(HttpStatus.OK)
@@ -187,5 +194,82 @@ public class APIController {
     )
     public Map<String, Object> llm(@RequestBody Map<String, Object> body) {
         return apiService.llm(body);
+    }
+
+    @GetMapping("/plans")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(
+            summary = "Get paginated plans",
+            description = "Retrieve a paginated list of floor plans with metadata"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Successfully retrieved plans",
+            content = @Content(
+                    mediaType = "application/json",
+                    examples = @ExampleObject(
+                            name = "Paginated Plans Response",
+                            value = """
+                {
+                  "content": [
+                    {
+                      "id": 1,
+                      "planData": "{\\"rooms\\": 3, \\"area\\": 45.5, \\"type\\": \\"хрущевка\\"}",
+                      "createdAt": "2025-11-30T08:54:33.336046"
+                    },
+                    {
+                      "id": 2, 
+                      "planData": "{\\"rooms\\": 2, \\"area\\": 38.2, \\"type\\": \\"сталинка\\"}",
+                      "createdAt": "2025-11-30T08:54:33.336046"
+                    }
+                  ],
+                  "pageNumber": 0,
+                  "pageSize": 10,
+                  "totalPages": 5,
+                  "totalElements": 42,
+                  "first": true,
+                  "last": false
+                }
+                """
+                    )
+            )
+    )
+    @ApiResponse(
+            responseCode = "400",
+            description = "Invalid pagination parameters",
+            content = @Content(
+                    mediaType = "application/json",
+                    examples = @ExampleObject(
+                            name = "Error Response",
+                            value = """
+                {
+                  "timestamp": "2025-11-30T10:30:00.000Z",
+                  "status": 400,
+                  "error": "Bad Request",
+                  "message": "Page index must not be less than zero"
+                }
+                """
+                    )
+            )
+    )
+    @Parameter(
+            name = "page",
+            description = "Page number (0-based)",
+            example = "0",
+            in = ParameterIn.QUERY,
+            schema = @Schema(type = "integer", minimum = "0", defaultValue = "0")
+    )
+    @Parameter(
+            name = "size",
+            description = "Number of items per page",
+            example = "10",
+            in = ParameterIn.QUERY,
+            schema = @Schema(type = "integer", minimum = "1", maximum = "100", defaultValue = "10")
+    )
+    public PageResponse<PlanResponse> getPlans(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return planService.getPlans(page, size);
     }
 }
