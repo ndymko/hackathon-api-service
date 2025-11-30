@@ -21,7 +21,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api")
 @Tag(name = "Floor Plan API", description = "AI-powered floor plan analysis and validation")
-@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class APIController {
     private final APIService apiService;
