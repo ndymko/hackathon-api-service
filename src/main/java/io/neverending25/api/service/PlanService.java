@@ -6,6 +6,8 @@ import io.neverending25.api.dto.PlanResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
 public class PlanService {
@@ -13,5 +15,9 @@ public class PlanService {
 
     public PageResponse<PlanResponse> getPlans(Integer page, Integer size) {
         return planClient.getPlans(page, size);
+    }
+
+    public String createPlan(Map<String, Object> plan) {
+        return planClient.createPlan(plan);
     }
 }

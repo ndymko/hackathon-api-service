@@ -14,6 +14,7 @@ import java.util.Map;
 public class APIService {
     private final ParserClient parserClient;
     private final ObjectMapper objectMapper;
+    private final PlanService planService;
 
     public Map<String, Object> parse(Map<String, Object> body) {
         String imageBase64 = body.get("image").toString();
@@ -78,7 +79,13 @@ If room at (258,370) is isolated, add door:
 Return JSON:
 """, planJson);
 
-        return sendToLlama(prompt);
+        Map<String, Object> result = sendToLlama(prompt);
+
+        if (result.get("valid").equals("true")) {
+            planService.createPlan(currentPlan);
+        }
+
+        return result;
     }
 
     public Map<String, Object> validatePlanViaLlama(Map<String, Object> body) {
