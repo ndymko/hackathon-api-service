@@ -20,10 +20,6 @@ public class APIService {
         return parserClient.parse(imageBase64);
     }
 
-    public Map<String, Object> modify(Map<String, Object> plan) {
-        return sendPlanToLlama(plan);
-    }
-
     public Map<String, Object> sendPlanToLlama(Map<String, Object> currentPlan) {
         String planJson = objectMapper.writeValueAsString(currentPlan);
 
@@ -188,8 +184,7 @@ Return JSON:
         requestBody.put("model", "llama3");
         requestBody.put("prompt", prompt);
         requestBody.put("stream", false);
-        // НЕ СТАВЬ format: json для свободного текста!
-        requestBody.put("options", Map.of("temperature", 0.7));
+        requestBody.put("options", Map.of("temperature", 0));
 
         RestTemplate restTemplate = new RestTemplate();
         Map<String, Object> response = restTemplate.postForObject(
